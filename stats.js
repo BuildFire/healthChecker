@@ -18,7 +18,7 @@ module.exports = {
                 var freeSpace = that.bytesToGigs(free);
                 var thresholds = {
                     cpuUtilization: .8, //% used
-                    availableMemory: 800.2, //Gigs available
+                    availableMemory: .2, //Gigs available
                     diskSpace: .5 //Gigs free
                 };
 
