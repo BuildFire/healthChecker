@@ -226,5 +226,62 @@ describe('processStats', function(){
             assert.isDefined(stats.diskSpace);
             assert.isDefined(stats.isHealthy);
         });
+
+        before(function(done) {
+            var overrides =  {};
+
+            processStats.getStats(overrides, function(err, results){
+                error = err;
+                stats = results;
+
+                done();
+            });
+        });
+
+        it('works with empty override', function(){
+            assert.isDefined(stats.cpuUtilization);
+            assert.isDefined(stats.availableMemory);
+            assert.isDefined(stats.diskSpace);
+            assert.isDefined(stats.isHealthy);
+        });
+
+        before(function(done) {
+            var overrides =  null;
+
+            processStats.getStats(overrides, function(err, results){
+                error = err;
+                stats = results;
+
+                done();
+            });
+        });
+
+        it('works with null override', function(){
+            assert.isDefined(stats.cpuUtilization);
+            assert.isDefined(stats.availableMemory);
+            assert.isDefined(stats.diskSpace);
+            assert.isDefined(stats.isHealthy);
+        });
+
+        before(function(done) {
+            //Specify values that will return false
+            var overrides =  {
+                cpuUtilization: 0,
+                availableMemory: 256,
+            };
+
+            processStats.getStats(overrides, function(err, results){
+                error = err;
+                stats = results;
+
+                done();
+            });
+        });
+
+        it('should respect overrides', function(){
+            var expectResult = false;
+
+            assert.equal(stats.isHealthy, expectResult);
+        });
     });
 });

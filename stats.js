@@ -2,7 +2,7 @@ var os = require('os');
 var diskspace = require('diskspace');
 
 module.exports = {
-    getStats: function(defaultThresholds, callback){
+    getStats: function(thresholdsOverride, callback){
         try{
             var oneMinAverageIndex = 0;
             //http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages
@@ -16,7 +16,7 @@ module.exports = {
             //Allow the first argument to be optional
             if(arguments.length == 1){
                 callback = arguments[0];
-                defaultThresholds = {};
+                thresholdsOverride = {};
             }
 
             diskspace.check('/', function (err, total, free)
@@ -34,7 +34,7 @@ module.exports = {
                     diskSpace: freeSpace,
                 };
 
-                var thresholds = that.setDefaultThresholds(thresholds, defaultThresholds);
+                var thresholds = that.setDefaultThresholds(thresholdsOverride, defaultThresholds);
 
                 stats.isHealthy = that.systemHealthy(stats, thresholds);
 
