@@ -1,0 +1,26 @@
+{
+  "name": "health_checker",
+  "version": "1.0.0",
+  "description": "Get basic health stats on your server",
+  "main": "stats.js",
+  "scripts": {
+    "test": "mocha ./**/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BuildFire/healthChecker.git"
+  },
+  "author": "abuturla@buildfire.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BuildFire/healthChecker/issues"
+  },
+  "homepage": "https://github.com/BuildFire/healthChecker#readme",
+  "dependencies": {
+    "diskspace": "^1.0.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
+  }
+}
