@@ -2,7 +2,7 @@ var os = require('os');
 var diskspace = require('diskspace');
 
 module.exports = {
-    getStats: function(callback){
+    getStats: function(defaultThresholds, callback){
         try{
             var oneMinAverageIndex = 0;
             //http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages
@@ -13,10 +13,16 @@ module.exports = {
             var loadPerCpu = this.calculateCpuLoad(loadAverage, cpus.length);
             var that = this;
 
+            //Allow the first argument to be optional
+            if(arguments.length == 1){
+                callback = arguments[0];
+                defaultThresholds = {};
+            }
+
             diskspace.check('/', function (err, total, free)
             {
                 var freeSpace = that.bytesToGigs(free);
-                var thresholds = {
+                var defaultThresholds = {
                     cpuUtilization: .8, //% used
                     availableMemory: .2, //Gigs available
                     diskSpace: .5 //Gigs free
@@ -28,6 +34,8 @@ module.exports = {
                     diskSpace: freeSpace,
                 };
 
+                var thresholds = that.setDefaultThresholds(thresholds, defaultThresholds);
+
                 stats.isHealthy = that.systemHealthy(stats, thresholds);
 
                 callback(null, stats);
@@ -38,6 +46,28 @@ module.exports = {
         catch(error){
             callback(error);
         }
+    },
+
+    setDefaultThresholds: function(overrides, defaults){
+        var updatedThresholds = defaults;
+
+        if(!overrides){
+            return updatedThresholds;
+        }
+
+        if(overrides.cpuUtilization){
+            updatedThresholds.cpuUtilization = overrides.cpuUtilization;
+        }
+
+        if(overrides.availableMemory){
+            updatedThresholds.availableMemory = overrides.availableMemory;
+        }
+
+        if(overrides.diskSpace){
+            updatedThresholds.diskSpace = overrides.diskSpace;
+        }
+
+        return updatedThresholds;
     },
 
     bytesToGigs: function(bytes){

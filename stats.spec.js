@@ -50,6 +50,103 @@ describe('processStats', function(){
 
     });
 
+    describe('overrideDefaultThresholds', function(){
+        it('correctly handles null override', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var result = processStats.setDefaultThresholds(null, defaultThresholds);
+            var expectResult = defaultThresholds;
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly handles empty override object', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var result = processStats.setDefaultThresholds({}, defaultThresholds);
+            var expectResult = defaultThresholds;
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly overrides the CPU default', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var result = processStats.setDefaultThresholds({cpuUtilization: .7}, defaultThresholds);
+            var expectResult = {
+                cpuUtilization: .7,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly overrides the memory default', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var result = processStats.setDefaultThresholds({availableMemory: .5}, defaultThresholds);
+            var expectResult = {
+                cpuUtilization: .8,
+                availableMemory: .5,
+                diskSpace: .5
+            };
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly overrides the disk space default', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var result = processStats.setDefaultThresholds({diskSpace: 1}, defaultThresholds);
+            var expectResult = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: 1
+            };
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly overrides cpu, memory, and disk space', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5
+            };
+            var override = {
+                cpuUtilization: .7,
+                availableMemory: .5,
+                diskSpace: 1
+            };
+
+            var result = processStats.setDefaultThresholds(override, defaultThresholds);
+            var expectResult = {
+                cpuUtilization: .7,
+                availableMemory: .5,
+                diskSpace: 1
+            };
+
+            assert.deepEqual(result, expectResult);
+        });
+
+    });
+
     describe('systemHealthy', function() {
         var thresholds = {
             cpuUtilization: .8,
