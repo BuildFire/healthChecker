@@ -4,51 +4,63 @@ var diskspace = require('diskspace');
 module.exports = {
     getStats: function(thresholdsOverride, callback){
         try{
-            var oneMinAverageIndex = 0;
-            //http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages
-            var loadAverage = os.loadavg()[oneMinAverageIndex];
-            var bytes = os.freemem();
-            var gigs = this.bytesToGigs(bytes);
-            var cpus = os.cpus();
-            var loadPerCpu = this.calculateCpuLoad(loadAverage, cpus.length);
-            var that = this;
-
             //Allow the first argument to be optional
             if(arguments.length == 1){
                 callback = arguments[0];
                 thresholdsOverride = {};
             }
 
+            var defaultThresholds = {
+                cpuUtilization: .8, //% used
+                availableMemory: .2, //Gigs available
+                diskSpace: .5, //Gigs free
+                interval: 5 //Average of 5 min
+            };
+
+            var thresholds = this.setThresholds(thresholdsOverride, defaultThresholds);
+            var loadAverageIndex = this.convertIntervalToIndex(thresholds.interval);
+            var loadAverage = os.loadavg()[loadAverageIndex];
+            var bytes = os.freemem();
+            var gigs = this.bytesToGigs(bytes);
+            var cpus = os.cpus();
+            var loadPerCpu = this.calculateCpuLoad(loadAverage, cpus.length);
+
+            var stats = {
+                cpuUtilization: loadPerCpu,
+                availableMemory: gigs,
+                interval: thresholds.interval
+            };
+
+            var that = this;
+
             diskspace.check('/', function (err, total, free)
             {
-                var freeSpace = that.bytesToGigs(free);
-                var defaultThresholds = {
-                    cpuUtilization: .8, //% used
-                    availableMemory: .2, //Gigs available
-                    diskSpace: .5 //Gigs free
-                };
-
-                var stats = {
-                    cpuUtilization: loadPerCpu,
-                    availableMemory: gigs,
-                    diskSpace: freeSpace,
-                };
-
-                var thresholds = that.setDefaultThresholds(thresholdsOverride, defaultThresholds);
-
+                stats.diskSpace = that.bytesToGigs(free);
                 stats.isHealthy = that.systemHealthy(stats, thresholds);
 
                 callback(null, stats);
             });
-
-
         }
         catch(error){
             callback(error);
         }
     },
 
-    setDefaultThresholds: function(overrides, defaults){
+    convertIntervalToIndex: function(interval){
+        if(interval != 1 && interval != 5 && interval != 15){
+            throw new Error("Not a valid interval.");
+        }
+
+        var loadAverageIndexes = {
+            1: 0,
+            5: 1,
+            15: 2
+        };
+
+        return loadAverageIndexes[interval];
+    },
+
+    setThresholds: function(overrides, defaults){
         var updatedThresholds = defaults;
 
         if(!overrides){
@@ -65,6 +77,10 @@ module.exports = {
 
         if(overrides.diskSpace){
             updatedThresholds.diskSpace = overrides.diskSpace;
+        }
+
+        if(overrides.interval){
+            updatedThresholds.interval = overrides.interval;
         }
 
         return updatedThresholds;
@@ -98,6 +114,3 @@ module.exports = {
         return isSystemHealthy;
     }
 };
-
-
-

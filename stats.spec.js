@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
+var expect = require('chai').expect;
 var processStats = require( './stats' );
-
 
 describe('processStats', function(){
     describe('bytesToGigs', function() {
@@ -50,6 +50,27 @@ describe('processStats', function(){
 
     });
 
+    describe('convertIntervalToIndex', function() {
+        it('throws and exception on non numeric value', function(){
+            assert.throws(function(){
+                processStats.convertIntervalToIndex("A")
+            }, Error, "Not a valid interval");
+        });
+
+        it('throws and exception on non interger value', function(){
+            assert.throws(function(){
+                processStats.convertIntervalToIndex(1.25)
+            }, Error, "Not a valid interval");
+        });
+
+        it('converts 5 min to index 1', function(){
+            var result = processStats.convertIntervalToIndex(5);
+            var expectResult = 1;
+
+            assert.equal(result, expectResult);
+        });
+    });
+
     describe('overrideDefaultThresholds', function(){
         it('correctly handles null override', function(){
             var defaultThresholds = {
@@ -57,7 +78,7 @@ describe('processStats', function(){
                 availableMemory: .2,
                 diskSpace: .5
             };
-            var result = processStats.setDefaultThresholds(null, defaultThresholds);
+            var result = processStats.setThresholds(null, defaultThresholds);
             var expectResult = defaultThresholds;
 
             assert.deepEqual(result, expectResult);
@@ -69,7 +90,7 @@ describe('processStats', function(){
                 availableMemory: .2,
                 diskSpace: .5
             };
-            var result = processStats.setDefaultThresholds({}, defaultThresholds);
+            var result = processStats.setThresholds({}, defaultThresholds);
             var expectResult = defaultThresholds;
 
             assert.deepEqual(result, expectResult);
@@ -81,7 +102,7 @@ describe('processStats', function(){
                 availableMemory: .2,
                 diskSpace: .5
             };
-            var result = processStats.setDefaultThresholds({cpuUtilization: .7}, defaultThresholds);
+            var result = processStats.setThresholds({cpuUtilization: .7}, defaultThresholds);
             var expectResult = {
                 cpuUtilization: .7,
                 availableMemory: .2,
@@ -97,7 +118,7 @@ describe('processStats', function(){
                 availableMemory: .2,
                 diskSpace: .5
             };
-            var result = processStats.setDefaultThresholds({availableMemory: .5}, defaultThresholds);
+            var result = processStats.setThresholds({availableMemory: .5}, defaultThresholds);
             var expectResult = {
                 cpuUtilization: .8,
                 availableMemory: .5,
@@ -113,11 +134,29 @@ describe('processStats', function(){
                 availableMemory: .2,
                 diskSpace: .5
             };
-            var result = processStats.setDefaultThresholds({diskSpace: 1}, defaultThresholds);
+            var result = processStats.setThresholds({diskSpace: 1}, defaultThresholds);
             var expectResult = {
                 cpuUtilization: .8,
                 availableMemory: .2,
                 diskSpace: 1
+            };
+
+            assert.deepEqual(result, expectResult);
+        });
+
+        it('correctly overrides the interval default', function(){
+            var defaultThresholds = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5,
+                interval: 5
+            };
+            var result = processStats.setThresholds({interval: 15}, defaultThresholds);
+            var expectResult = {
+                cpuUtilization: .8,
+                availableMemory: .2,
+                diskSpace: .5,
+                interval: 15
             };
 
             assert.deepEqual(result, expectResult);
@@ -135,7 +174,7 @@ describe('processStats', function(){
                 diskSpace: 1
             };
 
-            var result = processStats.setDefaultThresholds(override, defaultThresholds);
+            var result = processStats.setThresholds(override, defaultThresholds);
             var expectResult = {
                 cpuUtilization: .7,
                 availableMemory: .5,
