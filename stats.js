@@ -14,7 +14,7 @@ module.exports = {
                 cpuUtilization: .8, //% used
                 availableMemory: .2, //Gigs available
                 diskSpace: .5, //Gigs free
-                interval: 5 //Average of 5 min
+                interval: 1 //Average over 1 min
             };
 
             var thresholds = this.setThresholds(thresholdsOverride, defaultThresholds);
@@ -24,11 +24,13 @@ module.exports = {
             var gigs = this.bytesToGigs(bytes);
             var cpus = os.cpus();
             var loadPerCpu = this.calculateCpuLoad(loadAverage, cpus.length);
+            var addresses = this.getIPAddress();
 
             var stats = {
                 cpuUtilization: loadPerCpu,
                 availableMemory: gigs,
-                interval: thresholds.interval
+                interval: thresholds.interval,
+                addresses: addresses
             };
 
             var that = this;
@@ -44,6 +46,28 @@ module.exports = {
         catch(error){
             callback(error);
         }
+    },
+
+    getIPAddress: function(){
+        var addresses = {};
+        var networkInterfaces = os.networkInterfaces();
+
+        //https://nodejs.org/api/os.html#os_os_networkinterfaces
+        Object.keys(networkInterfaces).forEach(function (networkInterface) {
+            var i = 0;
+
+            networkInterfaces[networkInterface].forEach(function (address) {
+                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                if (address.family ==='IPv4' && !(address.internal)) {
+                    var key =  (i === 0) ? networkInterface : networkInterface + '.' + i ;
+
+                    addresses[key] = address.address;
+                    ++i;
+                }
+            });
+        });
+
+        return addresses;
     },
 
     convertIntervalToIndex: function(interval){

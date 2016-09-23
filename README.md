@@ -37,7 +37,7 @@ healthChecker.getStats(thresholdOverride, function(error, results){
 {
     cpuUtilization: 0.01904296875,
     availableMemory: 2.828726272,
-    interval: 5,
+    interval: 1,
     diskSpace: 4.427292672,
     isHealthy: true
 }
@@ -46,7 +46,7 @@ healthChecker.getStats(thresholdOverride, function(error, results){
 ###CPU Utilization
 CPU Utilization is a calculated value. It takes the load average returned 
 by the OS, and divides it by the number of CPUs. The load average is based 
-on either a 1, 5, or 15 minute interval. (The default setting is 5 minutes.)
+on either a 1, 5, or 15 minute interval. (The default setting is 1 minutes.)
 Note that the interval only applies to the CPU, and not the other values.
 
 ### Default Thresholds
@@ -59,7 +59,7 @@ can be overridden, to suit your specific needs.
 ```javascript
 var defaultThresholds = {
     cpuUtilization: .8, //80% utilized
-    interval: 5, //Average load over 5 min. (Only applies to CPU)
+    interval: 1, //Average load over 1 min. (Only applies to CPU)
     availableMemory: .2, //200 megs available
     diskSpace: .5 //500 megs free
 };

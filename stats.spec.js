@@ -27,6 +27,17 @@ describe('processStats', function(){
         });
     });
 
+    describe('getIPAddress', function() {
+        it('returns a valid IP address', function(){
+            var results = processStats.getIPAddress();
+            var ipAddressRegex = /\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/;
+
+            Object.keys(results).forEach(function(key){
+                expect(results[key]).to.match(ipAddressRegex);
+            });
+        });
+    });
+
     describe('calculateCpuLoad', function() {
         it('correctly calculate for one CPU', function(){
             var cpuCount = 1;
