@@ -2,22 +2,22 @@ var os = require('os');
 var diskspace = require('diskspace');
 
 module.exports = {
-    getStats: function(thresholdsOverride, callback){
+    getStats: function(options, callback){
         try{
             //Allow the first argument to be optional
             if(arguments.length == 1){
                 callback = arguments[0];
-                thresholdsOverride = {};
+                options = {};
             }
 
             var defaultThresholds = {
-                cpuUtilization: .8, //% used
+                cpuUtilization: .9, //% used
                 availableMemory: .2, //Gigs available
                 diskSpace: .5, //Gigs free
                 interval: 1 //Average over 1 min
             };
 
-            var thresholds = this.setThresholds(thresholdsOverride, defaultThresholds);
+            var thresholds = this.setThresholds(options, defaultThresholds);
             var loadAverageIndex = this.convertIntervalToIndex(thresholds.interval);
             var loadAverage = os.loadavg()[loadAverageIndex];
             var bytes = os.freemem();
@@ -32,6 +32,10 @@ module.exports = {
                 interval: thresholds.interval,
                 addresses: addresses
             };
+
+            if(options.alias){
+                stats.alias = options.alias;
+            }
 
             var that = this;
 

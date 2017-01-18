@@ -11,7 +11,7 @@ may override these values to meet your specific needs.
 
 ## Installation
 
-npm install
+npm install health_checker
 
 ## Usage
 
@@ -58,7 +58,7 @@ can be overridden, to suit your specific needs.
 
 ```javascript
 var defaultThresholds = {
-    cpuUtilization: .8, //80% utilized
+    cpuUtilization: .9, //90% utilized
     interval: 1, //Average load over 1 min. (Only applies to CPU)
     availableMemory: .2, //200 megs available
     diskSpace: .5 //500 megs free
