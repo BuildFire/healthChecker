@@ -14,7 +14,7 @@ module.exports = {
                 cpuUtilization: .9, //% used
                 availableMemory: .2, //Gigs available
                 diskSpace: .5, //Gigs free
-                interval: 1 //Average over 1 min
+                interval: 5 //Average over 5 min
             };
 
             var thresholds = this.setThresholds(options, defaultThresholds);
@@ -30,7 +30,8 @@ module.exports = {
                 cpuUtilization: loadPerCpu,
                 availableMemory: gigs,
                 interval: thresholds.interval,
-                addresses: addresses
+                addresses: addresses,
+                uptime: process.uptime()
             };
 
             if(options.alias){

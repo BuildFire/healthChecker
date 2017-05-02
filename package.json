@@ -1,6 +1,6 @@
 {
   "name": "health_checker",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Get basic health stats on your server",
   "main": "stats.js",
   "scripts": {
