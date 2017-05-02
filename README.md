@@ -31,7 +31,7 @@ healthChecker.getStats(thresholdOverride, function(error, results){
 });
 ```
 
-###Sample Results
+### Sample Results
 
 ```javascript
 {
@@ -43,7 +43,7 @@ healthChecker.getStats(thresholdOverride, function(error, results){
 }
 ```
 
-###CPU Utilization
+### CPU Utilization
 CPU Utilization is a calculated value. It takes the load average returned 
 by the OS, and divides it by the number of CPUs. The load average is based 
 on either a 1, 5, or 15 minute interval. (The default setting is 5 minutes.)
